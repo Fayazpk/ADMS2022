@@ -1,0 +1,185 @@
+> db
+db1
+> use employee;
+switched to db employee
+> db.createCollection("data");
+{ "ok" : 1 }
+> db.data.insert({"name" : "mohan","age" : 50,"email" : "mahan@a","salary" : 2000})
+>db.data.insert({"name":"bhuvan","age":20,"email":"bhuv@a","salary":5000});
+>db.data.insert({"name":"sana","age":60,"email":"sana@a","salary":9000});
+> db.data.insert({"name":"sisu","age":20,"email":"sisu@a","salary":1000});
+
+
+> db.data.find().pretty()
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "mahan@a",
+        "salary" : 2000
+}
+{
+        "_id" : ObjectId("6299b998419b75020971d89b"),
+        "name" : "raju",
+        "age" : 60,
+        "email" : "raju@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba74419b75020971d89d"),
+        "name" : "sana",
+        "age" : 60,
+        "email" : "sana@a",
+        "salary" : 9000
+}
+{
+        "_id" : ObjectId("6299ba91419b75020971d89e"),
+        "name" : "sisu",
+        "age" : 20,
+        "email" : "sisu@a",
+        "salary" : 1000
+}
+
+> db.data.find({"name":{$in:["mohan"]}}).pretty()
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "mahan@a",
+        "salary" : 2000
+}
+
+> db.data.find({"salary":{$gte:5000}}).pretty()
+{
+        "_id" : ObjectId("6299b998419b75020971d89b"),
+        "name" : "raju",
+        "age" : 60,
+        "email" : "raju@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba74419b75020971d89d"),
+        "name" : "sana",
+        "age" : 60,
+        "email" : "sana@a",
+        "salary" : 9000
+}
+>
+
+> db.data.find({"name":{$nin:["bhuvan","raju","mohan"]}}).pretty()
+{
+        "_id" : ObjectId("6299ba74419b75020971d89d"),
+        "name" : "sana",
+        "age" : 60,
+        "email" : "sana@a",
+        "salary" : 9000
+}
+{
+        "_id" : ObjectId("6299ba91419b75020971d89e"),
+        "name" : "sisu",
+        "age" : 20,
+        "email" : "sisu@a",
+        "salary" : 1000
+}
+
+> db.data.find({"name":/^r/}).pretty()
+{
+        "_id" : ObjectId("6299b998419b75020971d89b"),
+        "name" : "raju",
+        "age" : 60,
+        "email" : "raju@a",
+        "salary" : 5000
+}
+
+> db.data.find({"name":{$in:["bhuvan","raju","mohan"]}}).pretty()
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "mahan@a",
+        "salary" : 2000
+}
+{
+        "_id" : ObjectId("6299b998419b75020971d89b"),
+        "name" : "raju",
+        "age" : 60,
+        "email" : "raju@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000
+}
+
+db.data.find({age:{$lt:30}},{"name":1,salary:"1"}).pretty()
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "salary" : "1"
+}
+{
+        "_id" : ObjectId("6299ba91419b75020971d89e"),
+        "name" : "sisu",
+        "salary" : "1"
+}
+
+> db.data.find({$and: [{"age":{$lt:30}},{"salary":{$gte:5000}}]}).pretty()
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000
+}
+
+> db.data.update({"name":"mohan"},{$set:{email:"new@updated"}})
+> db.data.findOneAndUpdate({"name":"mohan"},{$set:{email:"new1@updated"}})
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "new@updated",
+        "salary" : 2000
+}
+
+> db.data.deleteMany({"age":{$gt:56}})
+{ "acknowledged" : true, "deletedCount" : 2 }
+> db.data.find().pretty()
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "new1@updated",
+        "salary" : 2000
+}
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000
+}
+{
+        "_id" : ObjectId("6299ba91419b75020971d89e"),
+        "name" : "sisu",
+        "age" : 20,
+        "email" : "sisu@a",
+        "salary" : 1000
+}

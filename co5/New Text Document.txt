@@ -1,0 +1,88 @@
+ db.data.update({"name":"mohan"},{$set:{"dept":"science"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.data.update({"name":"bhuvan"},{$set:{"dept":"humanities"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.data.update({"name":"sisu"},{$set:{"dept":"commerce"}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+>
+
+> db.data.aggregate([{ $group:{_id:"$dept","avgsalary":{$avg:"$salary"}}}])
+{ "_id" : "science", "avgsalary" : 2000 }
+{ "_id" : "humanities", "avgsalary" : 5000 }
+{ "_id" : "commerce", "avgsalary" : 1000 }
+>
+
+> db.data.aggregate([{ $group:{_id:"$dept","min_salary":{$min:"$salary"}}}])
+{ "_id" : "commerce", "min_salary" : 1000 }
+{ "_id" : "science", "min_salary" : 2000 }
+{ "_id" : "humanities", "min_salary" : 5000 }
+>
+
+> db.data.aggregate([{ $group:{_id:"$dept","no_employees":{$sum:1}}}])
+{ "_id" : "science", "no_employees" : 1 }
+{ "_id" : "humanities", "no_employees" : 1 }
+{ "_id" : "commerce", "no_employees" : 1 }
+
+> db.data.find().sort({name:-1}).pretty()
+{
+        "_id" : ObjectId("6299ba91419b75020971d89e"),
+        "name" : "sisu",
+        "age" : 20,
+        "email" : "sisu@a",
+        "salary" : 1000,
+        "dept" : "commerce"
+}
+{
+        "_id" : ObjectId("6299b950419b75020971d89a"),
+        "name" : "mohan",
+        "age" : 50,
+        "email" : "new1@updated",
+        "salary" : 2000,
+        "dept" : "science"
+}
+{
+        "_id" : ObjectId("6299ba50419b75020971d89c"),
+        "name" : "bhuvan",
+        "age" : 20,
+        "email" : "bhuv@a",
+        "salary" : 5000,
+        "dept" : "humanities"
+}
+
+> db.data.createIndex({"name":"text"})
+{
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "createdCollectionAutomatically" : true,
+        "ok" : 1
+}
+
+
+
+> use inventory
+switched to db inventory
+> db.createCollection("orders")
+{ "ok" : 1 }
+> db.orders.insert({custid:200,name:"maya",item:"rice",price:340})
+WriteResult({ "nInserted" : 1 })
+> db.orders.insert({custid:201,name:"manu",item:"rice",price:340})
+WriteResult({ "nInserted" : 1 })
+> db.orders.insert({custid:202,name:"meera",item:"sugar",price:400})
+WriteResult({ "nInserted" : 1 })
+> db.orders.insert({custid:201,name:"maya",item:"sugar",price:400})
+WriteResult({ "nInserted" : 1 })
+> db.orders.insert({custid:202,name:"meera",item:"wheat",price:250})
+WriteResult({ "nInserted" : 1 })
+> var mapFunction=function(){emit(this.custid,this.price);};
+> var reduceFunction=function(key,values){return Array.sum(values);};
+> db.orders.mapReduce(mapFunction,reduceFunction,{'out':"map_example"})
+{ "result" : "map_example", "ok" : 1 }
+> db.map_example.find()
+{ "_id" : 201, "value" : 740 }
+{ "_id" : 200, "value" : 340 }
+{ "_id" : 202, "value" : 650 }
+
+> db.orders.mapReduce(mapFunction,reduceFunction,{query:{custid:{$gt:201}},out:"map_example"})
+{ "result" : "map_example", "ok" : 1 }
+> db.map_example.find()
+{ "_id" : 202, "value" : 650 }
